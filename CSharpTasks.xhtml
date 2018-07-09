@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN" "http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="GENERATOR" content="LyX 2.1.4" />
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+<title>Parallel and Asyncronous Programming in C# using the System.Threading.Tasks</title>
+<style type='text/css'>
+/* Layout-provided Styles */
+h1.title {
+font-size: x-large;
+margin-bottom: 1ex;
+text-align: center;
+
+}
+div.standard {
+margin-bottom: 2ex;
+}
+div.plain_layout {
+text-align: left;
+
+}
+ol.enumerate {
+margin-top: 0.7ex;
+margin-bottom: 0.7ex;
+margin-left: 3ex;
+text-align: left;
+
+}
+pre.listings {
+font-family: monospace;
+}
+
+
+</style>
+</head>
+<body>
+<h1 class="title"><a id='magicparlabel-525' />Parallel and Asyncronous Programming in C# using the System.Threading.Tasks</h1>
+<div class="standard"><a id='magicparlabel-1304' />(This article is a practical introduction to writing parallel code using Tasks in C#. For a more in-depth look at how Tasks are implemented in C#, please see (link to other article).</div>
+
+<div class="standard"><a id='magicparlabel-1309' />There are many ways to write parallel and asyncronous code in C#. One extremely convient method is using System.Threading.Tasks <a href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.task(v=vs.110).aspx">MSDN Documentaion</a>. We will go over several examples and best practices when using Tasks so that we write good parallel code.</div>
+
+<div class="standard"><a id='magicparlabel-709' />Simply put, a Task is an block of code which is run on its own thread and returns control to the calling program while it is running. The basic model is something like: This code does the following:</div>
+<div class='float float-listings'><pre class ='listings'>using System.Threading.Tasks;
+
+Task T = new Task( () =&gt; {/*Some block of code*/});
+//Some other code
+T.Start();
+//Some more code</pre></div>
+
+
+<ol class="enumerate"><a id='magicparlabel-717' /><li class="enumerate_item">Creates a new Task (but does not run it) named T which will run /*Some block of code*/ when it starts up.</li>
+<li class="enumerate_item">Continues running //Some other code.</li>
+<li class="enumerate_item">Starts running the Task T which will run all lines of code in /*Some block of code*/.</li>
+<li class="enumerate_item">Will continue running //Some more code while it waits on Task T to finish.</li>
+</ol>
+<div class="standard"><a id='magicparlabel-942' />This is not the only way to use Tasks, however. There are many convient ways to start and interact with Tasks. One of th most common is the following:</div>
+
+
+<div class='float float-listings'><pre class ='listings'>Task T = new Task.Factory.Start( () =&gt; {/*Some block of code*/});
+//Some other code
+T.Wait();
+//Some more code</pre></div>
+
+
+<div class="standard"><a id='magicparlabel-827' />This differs from our first example in several ways:</div>
+
+<ol class="enumerate"><a id='magicparlabel-1083' /><li class="enumerate_item">The Task T starts running /*Some block of code*/ immediatly. This just bundles up the creation of a new Task and the call to T.Start();</li>
+<li class="enumerate_item">While //Some other code runs while the Task T is running on another thread, //Some more code must wait to run until the Task T is finished. This is of utmost importance if for instance //Some more code is repsonible for reporting the results of the Task T to the UI or providing them to antoher computation.</li>
+</ol>
+<div class="standard"><a id='magicparlabel-1063' />Even though Tasks expose a convient and comprehenisble way to think about parallelism, there are several concerns of which me must take account. In this article we will talk about race conditions and deadlocks; and how to prevent them.</div>
+</body>
+</html>
